@@ -6,9 +6,9 @@ import ApiResponse from "../utils/ApiResponse.js";
 
 
 export const registerUser = asyncHandler(async (req, res)=>{
-    const {fullName, email, username, password} = req.body;
+    const {fullname, email, username, password} = req.body;
     
-    if([fullName, email, username, password].some((feild)=>
+    if([fullname, email, username, password].some((feild)=>
     feild?.trim()==="")){
         throw new ApiError(400, "All fields are required");
     }
@@ -22,11 +22,19 @@ export const registerUser = asyncHandler(async (req, res)=>{
     }
 
     const avatarLocalPath = req.files?.avatar[0]?.path;
-    const coverImages = req.files?.coveriamge[0]?.path;
+    //const coverImages = req.files?.coverImage[0]?.path;
+
+    let coverImages;
+    if(req.files && Array.isArray(req.files.coverImage 
+        && req.files.coverImage.length > 0)){
+            coverImages = req.files.coverImage[0].path;
+    }
 
     if(!avatarLocalPath){
-        throw new ApiError(400, "Avatar Field Required");
+        throw new ApiError(400, "Avatar Field Required at Multer Stage");
     }
+    
+    // console.log(avatarLocalPath);
 
     const avatar = await uploadToCloudinary(avatarLocalPath);
     const coverImage = await uploadToCloudinary(coverImages);
@@ -36,14 +44,17 @@ export const registerUser = asyncHandler(async (req, res)=>{
     }
 
     const newUser = await User.create({
-        fullName,
+        fullname,
         email,
         username: username.toLowerCase(),
         password,
         avatar: avatar.url,
         coverImage: coverImage?.url || "",
     });
-    const createdUser = await User.findById(User._id).select(
+
+    // console.log(newUser);
+
+    const createdUser = await User.findById(newUser._id).select(
         "-password -refreshToken"
     );
 
