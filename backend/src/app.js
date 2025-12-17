@@ -3,6 +3,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import router from '../routes/user.route.js';
+import errorHandler from '../middlewares/error.middleware.js';
 
 dotenv.config();
 
@@ -23,6 +24,6 @@ app.use(cookieParser()); // to parse cookies
 //Router declration 
 
 app.use("/api/v1/users", router);
-
+app.use(errorHandler);
 
 export default app;

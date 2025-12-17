@@ -44,8 +44,8 @@ export const registerUser = asyncHandler(async (req, res)=>{
     //const coverImages = req.files?.coverImage[0]?.path;
 
     let coverImages;
-    if(req.files && Array.isArray(req.files.coverImage 
-        && req.files.coverImage.length > 0)){
+    if(req.files && Array.isArray(req.files.coverImage)
+        && req.files.coverImage.length > 0){
             coverImages = req.files.coverImage[0].path;
     }
 
