@@ -260,3 +260,29 @@ export const updateUser = asyncHandler(async (req, res)=>{
 
     return res.status(200).json(new ApiResponse(200, user, "User Updated"));
 })
+
+export const updateUserAvatar = asyncHandler(async (req, res)=>{
+    const avatarLocalPath = req.file?.path;
+    if(!avatarLocalPath){
+        throw new ApiError(400, "Avatar Field Required at Multer Stage");
+    }
+
+    const avatar = await uploadToCloudinary(avatarLocalPath);
+
+    if(!avatar.url){
+        throw new ApiError(400, "Error While Uploading on Avatar");
+    }
+
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set:{
+                avatar: avatar.url,
+            }
+        },
+        {new: true}
+    ).select("-password -refreshToken");
+
+    return res.statuc(200).json(new ApiResponse(200, user, "Avatar Updated Successfully"))
+    
+})
