@@ -1,7 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import {User} from "../models/User.model.js"
 import ApiError from "../utils/ApiError.js"
-import {uploadToCloudinary} from "../utils/cloudinary.js"
+import {deleteToCloudinary, uploadToCloudinary} from "../utils/cloudinary.js"
 import ApiResponse from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken"
 
@@ -267,11 +267,23 @@ export const updateUserAvatar = asyncHandler(async (req, res)=>{
         throw new ApiError(400, "Avatar Field Required at Multer Stage");
     }
 
+    // code for deleting old avatar
+
+    // const user = await User.findById(req.user?._id).select("-password -refreshToken");
+    // if(user.avatar?.public_id){
+    //     await deleteToCloudinary(user.avatar.public_id);
+    // }
+
+
     const avatar = await uploadToCloudinary(avatarLocalPath);
 
     if(!avatar.url){
         throw new ApiError(400, "Error While Uploading on Avatar");
     }
+
+    user.avatar = avatar.url;
+    await user.save({validateBeforeSave: false});
+
 
     const user = await User.findByIdAndUpdate(
         req.user?._id,
@@ -283,6 +295,6 @@ export const updateUserAvatar = asyncHandler(async (req, res)=>{
         {new: true}
     ).select("-password -refreshToken");
 
-    return res.statuc(200).json(new ApiResponse(200, user, "Avatar Updated Successfully"))
+    return res.status(200).json(new ApiResponse(200, user, "Avatar Updated Successfully"))
     
 })

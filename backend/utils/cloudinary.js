@@ -27,5 +27,11 @@ const uploadToCloudinary = async (localFilePath)=>{
         return null;
     }
 }
+//--code for deleting old avatar--//
+
+export const deleteToCloudinary = async (publicId) => {
+    if(!publicId) return;
+    await cloudinary.uploader.destroy(publicId);
+}
 
 export {uploadToCloudinary};

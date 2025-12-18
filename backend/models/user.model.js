@@ -25,6 +25,18 @@ const userSchema = new mongoose.Schema({
         trim: true,
         index: true,
     },
+    //-------for deleting avatar we need thsi schema 
+    //     avatar: {
+//   url: {
+//     type: String,
+//     required: true
+//   },
+//   public_id: {
+//     type: String,
+//     required: true
+//   }
+// }
+
     avatar: {
         type: String,
         required: true,
