@@ -216,7 +216,7 @@ export const refreshToken = asyncHandler(async (req, res)=>{
     }
 })
 
-export const changeCurrentPassword = asyncHandler(async ()=>{
+export const changeCurrentPassword = asyncHandler(async (req, res)=>{
     const {oldPassword, newPassword} = req.body;
 
     const user = await User.findById(req.user._id);
@@ -234,4 +234,29 @@ export const changeCurrentPassword = asyncHandler(async ()=>{
     .json(new ApiResponse(200, {}, "Password Changed"))
 
     
+})
+
+export const getUser = asyncHandler(async ()=>{
+    return res.status(200).json(new ApiResponse(200, req.user, "User Fetched"));
+})
+
+export const updateUser = asyncHandler(async (req, res)=>{
+    const {fullname, email} = req.body;
+
+    if(!fullname || !email){
+        throw new ApiError(400, "All fields are required");
+    }
+
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set:{
+                fullname,
+                email: email.toLowerCase(),
+            }
+        },
+        {new: true}
+    ).select("-password -refreshToken");
+
+    return res.status(200).json(new ApiResponse(200, user, "User Updated"));
 })
